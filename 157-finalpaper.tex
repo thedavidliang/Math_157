@@ -1,0 +1,355 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+ 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}[theorem]{Exammple}
+\newcommand{\R}{\mathbb{R}}
+
+\title{Stochastic Calculus and Applications}
+\author{Math Concentration Junior Paper - David Liang}
+\date{April 26, 2017}
+
+\begin{document}
+
+\maketitle
+
+\section{Brownian Motion}
+
+Stochastic calculus is rooted in Brownian motion.  Brownian motion is useful for modeling many natural physical processes.  Brownian motion is attributed to the botanist Robert Brown, who in 1827 noticed the erratic continuous movement of pollen grains suspended in water.  Brownian motion is sometimes also called the Weiner process, after American mathematician Norbert Weiner. 
+
+\subsection{Standard Brownian Motion}
+We define standard Brownian motion (BM) as a continuous time stochastic process $\{B_t\}_{t\geq 0}$ satisfying the following properties: 
+\begin{itemize}
+\item $B_0=0$
+\item Continuous paths: The path $B_t$ is continuous almost everywhere
+\item Normal distribution: For all $t>0$, $B_t \sim N(0,t)$ a Normal distribution with mean 0 and variance $t$
+\item Stationary increments: $B_t - B_s \sim B_{t-s} \sim N(0, t-s)$ for all $t-s>0$
+\item Independent increments: For $0\leq a < b < c < d$, then we have that the increment $(B_b-B_a)$ is independent of the increment of a disjoint time interval $(B_d-B_c)$.
+\end{itemize}
+
+\subsection{Martingale Property of BM}
+Standard BM has several nice properties.  One such property is that standard BM is \emph{martingale}.  
+
+A stochastic process $\{Y_t\}_{t\geq 0}$ is martingale with respect to itself if for all $t\geq 0$, it satisfies: 
+\begin{itemize}
+\item $E(|Y_t|) < \infty$ 
+\item $E(Y_t \mid Y_r, 0\leq r \leq s) Y_s$ for all $0 \leq s \leq t$.
+\end{itemize}
+
+
+\begin{lemma}
+Standard Brownian motion is martingale.
+\end{lemma}
+\begin{proof}
+The expectation of $B_t$ conditioned on prior values of the BM, $\{B_r\}_{r\leq s}$ for $s<t$, is 
+\begin{align*}
+E(B_t \mid B_r, 0\leq r \leq s) &= E\left( \left( B_t - B_s\right) + B_s \mid B_r, 0\leq r \leq s\right) \\
+&= E(B_t - B_s) + E\left(B_s \mid B_r, 0\leq r \leq s\right) \\
+&= 0 + B_s = B_s
+\end{align*}
+as desired.  Here, we made use of independent increments to note that $(B_t-B_s)$ is indepedent of $\{B_r\}_{r\leq s}$.
+
+The next thing to show is finite expectation.  We note that $B_t \sim N(0,t)$
+\begin{align*}
+E(|B_t|) &= \int_{-\infty}^\infty |x| \cdot \frac{1}{\sqrt{2\pi t}} \exp\left( -\frac{x^2}{2t}\right)dx \\
+&= 2 \int_0^\infty x\cdot \frac{1}{\sqrt{2\pi t}} \exp\left( -\frac{x^2}{2t}\right)dx \\
+&= \sqrt{\frac{2}{\pi t}} (-t) \int_0^\infty -\frac{x}{t} \exp\left( -\frac{x^2}{2t}\right)dx \\ 
+&= -\sqrt{\frac{2t}{\pi}} \left( \exp\left(-\frac{x^2}{2t}\right) \Big|^\infty_0 \right) \\
+&= \sqrt{\frac{2t}\pi} < \infty
+\end{align*}
+as desired.  We note that this is also just the expected value of a folded normal distribution.
+
+\end{proof}
+
+Another related property that can be shown is that standard BM has the Markov property, namely that 
+$E(B_t \mid B_r, 0\leq r\leq s) = E(B_t \mid B_s)$.
+
+\subsection{Variations of Standard BM}
+One simple variation of standard BM is to add in a drift and variance component, $\mu \in \R$ and $\sigma>0$.  Let us define the process $\{X_t\}_{t\geq 0}$ with 
+$$X_t = \mu t + \sigma B_t,\ t\geq 0$$
+to be \emph{Brownian motion with drift parameter $\mu$ and variance parameter $\sigma^2$}.  We note that we have that 
+$$X_t \sim N(\mu t, \sigma^2 t)$$
+\\
+We also consider Brownian motion as an exponent.  Let $\{X_t\}_{t\geq 0}$ to be BM with drift parameter $\mu$ and variance parameter $\sigma^2$.  Then the process $\{G_t\}_{t\geq 0}$ with $G_0 > 0$ defined by
+$$ G_t = G_0 \exp(X_t),\ t\geq 0$$
+is called \emph{geometric Brownian motion}.
+
+
+
+
+
+
+\section{Integrals with Brownian Motion}
+Brownian motion can be incorporated integrals to produce some interesting results.
+
+
+\subsection{Integrating BM}
+We first consider integrating BM.  Let us define 
+$$I_t = \int_0^t B_s ds$$
+The integral is defined as the limit of a series of Riemann sums, in the same way a Riemann integral is defined.  Let $0=t_0 < t_1 < \ldots < t_n = t$.  Let $t_k^* \in [t_{k-1},t_k]$ for $k=1,\ldots,n$.  Then the integral is defined as
+$$\int_0^t B_s ds := 
+\lim_{\substack{n\to\infty \\ \max_k(t_k-t_{k-1})\to0}}\ 
+\sum_{k=1}^nB_{t_k^*}(t_k-t_{k-1})$$
+It is important to note that this integral, along with all the other integrals introduced in this paper, are themselves random variables.  From the Riemann sum approximation of the integral, one would expect that the mean of the integral is zero, and that the integral has a Normal distribution, since one can rework the expression into a sum of independent Normal random variables.  These hypotheses will not be formally proven in this paper, but they can be proven with the Central Limit Theorem.
+\\
+
+From here on out, we will use the same definition for the $t_k$ and $t_k^*$ values.  We will also just use ``$\lim_{n\to\infty}$'' with the condition that $\max_k(t_k-t_{k-1})\to 0$ implicit and not explicitly written.
+
+
+
+
+\subsection{Integrating Non-Stochastic Processes with Respect to BM}
+We now consider integrating a non-stochastic function $g(s)$ with respect to BM. 
+$$I_t = \int_0^t g(s) dB_s$$
+In order to develop a notion for this integral, we first consider the Riemann-Stieltjes integral, a generalization of the Rieman integral.  %Let $0=t_0 < t_1 < \ldots < t_n = t$.  Let $t_k^* \in [t_{k-1},t_k]$ for $k=1,\ldots,n$.  
+Then the Riemann-Stieltjes integral is defined as 
+$$\int_0^t g(s)dF(s) = 
+\lim_{\substack{n\to\infty}}\ 
+\sum_{k=1}^n g(t_k^*)(F(t_k) - F(t_{k-1}))$$ 
+We note that for $F(s) = s$, this is simply the Riemann integral.  We also note that if $F$ is differentiable with a continuous derivative, with $f(s) = \frac{d}{ds}F(s)$, then we have that 
+$$\int_0^t g(s)dF(s) = \int_0^t g(s)f(s)ds$$
+
+The integral of a deterministic process with respect to BM can now be defined.  Let $g$ be a square-integrable function, $\int_0^\infty g(s)^2ds < \infty$.  Then the integral of $g$ with respect to $B_t$ is defined as: 
+$$\int_0^t g(s)dB_s := 
+\lim_{\substack{n\to\infty }}\ 
+\sum_{k=1}^n g(t_k^*)(B_{t_k} - B_{t_{k-1}})$$ 
+
+\begin{lemma}
+$I_t = \int_0^t g(s) dB_s$ is a random variable whose distribution is Normal with mean 0 and variance $\int_0^t g(s)^2 ds$.
+\end{lemma}
+\begin{proof}
+Let us define $X_k = g(t_k^*)(B_{t_k} - B_{t_{k-1}})$ for $k=1,\ldots,n$.  The $X_k$ are independent of each other.  Each $X_k$ has a Normal distribution with mean 0 and variance $\sigma_k^2 = g(t_k^*)^2(t_k-t_{k-1})$.  Let $s_n^2 = \sigma_1^2 + \cdots + \sigma_n^2$, the variance of the sum of the $X_k$ terms.  
+
+We will employ a variant of the Central Limit Theorem involving the fundamental bound.  We define the fundamental bound as 
+$$FB_n = \sum_{k=1}^n \left(\frac{\sigma_k^2}{s_n^2}\right) E\left(\frac{X_k^2}{\sigma_k^2}\min(1, |X_k / s_n|)\right)$$
+If $FB_n \to 0$ as $n\to\infty$, then CLT holds: The sum of the $X_k$ terms divided by their standard deviation will approach in distribution the standard Normal.
+$$ \frac{\sum_{k=1}^n X_k}{s_n} \to N(0,1)$$  
+
+If CLT indeed holds, we are done, since by definition, 
+$$\lim_{n\to\infty} \sum_{k=1}^n X_k = \int_0^t g(s)dB_s$$
+$$\lim_{n\to\infty} s_n^2 = \lim_{n\to\infty} \sum_{k=1}^n g(t_k^*)^2(t_k - t_{k-1}) = \int_0^t g(s)^2ds$$
+so the integral $\int_0^t g(s)dB_s$ has a normal distribution with mean 0 and variance $\int_0^t g(s)^2ds$.
+
+So now it suffices to show that the fundamental bound approaches zero, $FB_n \to 0$.  Here we note that for $Z\sim N(0,1)$, then $E(|Z|^3) = \sqrt{8/\pi}$.  This will be applied to $X_k = \sigma_k Z$, since $X_k$ has Normal distribution.
+\begin{align*}
+FB_n &= \sum_{k=1}^n \left(\frac{\sigma_k^2}{s_n^2}\right) E\left(\frac{X_k^2}{\sigma_k^2}\min(1, |X_k / s_n|)\right) \\
+&\leq \sum_{k=1}^n \left(\frac{\sigma_k^2}{s_n^2}\right) E\left(\frac{X_k^2}{\sigma_k^2}\cdot \frac{|X_k|}{s_n}\right) \\
+&= \sum_{k=1}^n E\left( \frac{|X_k|^3}{s_n^3}\right) \\
+&= \sqrt{8/\pi}\cdot\sum_{k=1}^n \frac{(g(t_k^*)^2(t_k-t_{k-1}))^{3/2}}{s_n^3} \\
+&= \sqrt{8/\pi}\cdot\sum_{k=1}^n \frac{(g(t_k^*)^2(t_k-t_{k-1}))^{3/2}}
+{\left( \sum_{j=1}^n g(t_j^*)^2(t_j - t_{j-1}) \right)^{3/2}} \\
+&\to 0 \text{ as } n\to\infty,\ \max_k(t_k-t_{k-1}) \to 0
+\end{align*}
+Thus, since $FB_n\geq 0$, we must have that $FB_n \to 0$ as $n\to\infty$.  So we are done.
+
+\end{proof}
+
+\subsection{Ito Integral - Integrating Stochastic Processes with Respect to BM}
+We can now look at integrating a stochastic process $\{X_t\}_{t\geq 0}$ with respect to BM:
+$$I_t = \int_0^t X_s dB_s$$
+There are a couple of requirements: 
+\begin{itemize}
+\item $\int_0^t E(X_s^2)ds \leq 0$
+\item $X_t$ is \emph{adapted} to the Brownian motion.  That is, $X_t$ depends only on $\{B_s: s\leq t\}$ and does not depend on $\{B_s: s > t\}$
+\end{itemize}
+
+The Ito integral is defined similarly along the Riemann-Stieltjes way, but with the important distinction that we are taking a left sum: $t_{k-1}$ is used instead of arbitrary $t_k^* \in [t_{k-1},t_k]$.  
+$$\int_0^t X_s dB_s := \lim_{n\to\infty} \sum_{k=1}^n X_{t_{k-1}}(B_{t_k} - B_{t_{k-1}})$$
+The limit is defined in the \emph{mean-square} sense.  Random variables $Y_0,Y_1,\ldots$ converge to $Y$ in the mean-square if $\lim_{n\to\infty} E((Y_n-Y)^2) = 0$.
+
+Taking the left sum is useful, since then $X_{t_{k-1}}$ is independent of $(B_{t_k} - B_{t_{k-1}})$ as $\{X_t\}_{t\geq0}$ is adapted to $\{B_t\}_{t\geq0}$.
+
+Specifying to index with $t_{k-1}$ instead of $t_k^*$ is important since both processes are stochastic, and the value of the integral can change depending on which endpoint is chosen.
+
+\begin{lemma}
+The value of the Ito integral is dependent on the type of sum used in the Riemann-Stieltjes sum approximation.  In particular, using the left sum and using the midpoint sum will yield different values of the integral.
+\end{lemma}
+\begin{proof}
+We will introduce the Stratonovich integral $\int_0^t X_s \circ dB_s$, in which the $\circ$ is used to differentiate the Stratonovich integral from the standard Ito integral.  The Stratonovich integral uses a midpoint sum instead of the left sum.
+$$J_t = \int_0^t X_s \circ dB_s := \lim_{n\to\infty} \sum_{k=1}^n \frac12 (X_{t_{k-1}} + X_{t_k})(B_{t_k} - B_{t_{k-1]}})$$
+We compare this to the Ito integral: 
+$$I_t = \int_0^t X_s dB_s = \lim_{n\to\infty} \sum_{k=1}^n X_{t_{k-1}}(B_{t_k} - B_{t_{k-1]}})$$
+We can manipulate the expression for the Stratonovich integral: 
+\begin{align*}
+J_t = \int_0^t X_s \circ dB_s &= \lim_{n\to\infty} \sum_{k=1}^n \frac12 (X_{t_{k-1}} + X_{t_k})(B_{t_k} - B_{t_{k-1]}}) \\
+&= \lim_{n\to\infty} \sum_{k=1}^n \left( X_{t_{k-1}} + \frac12(X_{t_k} - X_{t_{k-1}}) \right)(B_{t_k} - B_{t_{k-1]}}) \\
+&= \lim_{n\to\infty} \sum_{k=1}^n X_{t_{k-1}}(B_{t_k} - B_{t_{k-1]}})
++ \frac12 \lim_{n\to\infty} \sum_{k=1}^n (X_{t_k} - X_{t_{k-1}})(B_{t_k} - B_{t_{k-1]}}) \\
+&= I_t + \frac12 [X,B]_t
+\end{align*}
+where the term denoted by $[X,B]_t$ is the \emph{quadratic variation} of $\{X_t\}$ and $\{B_t\}$.
+$$[X,Y]_t := \lim_{n\to\infty} \sum_{k=1}^n (X_{t_k} - X_{t_{k-1}})(Y_{t_k} - Y_{t_{k-1}}) $$
+
+In particular, the quadratic variation is usually not equal to zero.  For example, if we simply take $X=B$, then we have that 
+$$[B,B]_t = t \not=0$$
+We will not provide a formal proof here for $[B,B]_t = t$, but will note that the proof entails approximating
+$$[B,B]_t \approx V_M(B,B)_t:= \sum_{k=1}^M (B_{t_k} - B_{t_{k-1}})^2$$
+and showing that the expected values of $V_M(B,B)_t$ is $t$, while the variance of $V_M(B,B)_t$ approaches zero as $M$ goes to infinity. 
+
+\end{proof}
+
+\subsection{Ito's Lemma}
+We present the integral form of Ito's Lemma, regarded as the the most important result in stochastic calculus.  
+
+Let $g$ be a real-valued function that is twice-continuously differentiable.  Then Ito's Lemma asserts that 
+$$g(B_t) - g(B_0) = \int_0^t g'(B_s)dB_s + \frac12 \int_0^t g''(B_s)ds$$
+
+Ito's Lemma is useful for finding the value of some Ito Integrals.  
+
+\begin{example}
+Show that $\int_0^t B_s dB_s = \frac12 B_t^2 - \frac12 t$
+\end{example}
+\begin{proof}
+Let us consider the function $g(x) = \frac12 x^2$.  Then from Ito's Lemma: 
+$$\frac12 B_t^2 - 0 = \int_0^t B_sdB_s + \frac12 \int_0^t ds \ \ \Rightarrow \ \ \int_0^t B_sdB_s = \frac12 B_t^2 - \frac12 t$$
+
+\end{proof}
+
+Ito's Lemma can be extended to functions $g$ of both $B_t$ and $t$.  Let $g(t,x)$ be twice-continuously differentiable in $x$ and continuously differentiable in $t$.  Let $g_x,\ g_{xx},\ g_t$ denote the first derivative in $x$, the second derivative in $x$, the first derivative in $t$, respectively.  Then Ito's Lemma states that 
+$$g(t,B_t) - g(0,B_0) = \int_0^t \left(g_t(s, B_s) + \frac12 g_{xx}(s, B_s)\right)ds + \int_0^t g_x(s, B_s)ds$$
+
+A proof of Ito's Lemma is provided in the following section.
+
+
+
+
+
+\section{Stochastic Differential Equations}
+We have so far considered integrals involving Brownian motion.  We now consider the other half of calculus, namely differential equations.  Looking at the stochastic differential equations for a process are often helpful for solving the stochastic integrals.  In fact, Ito's Lemma for stochastic differential equations provides a simple way to evaluate many stochastic integrals.
+
+\subsection{Ito's Lemma, Revisited}
+Ito's Lemma is perhaps more useful in its differential form.  Let $g$ be a twice-continuously differentiable function.  Let $g_x$ and $g_{xx}$ denote its first and second derivatives.  Then Ito's Lemma asserts that:
+$$dg(B_t) = g_x(B_t)dB_t + \frac12 g_{xx}(B_t)dB_t$$
+
+Ito's Lemma can be extended to have $g$ also be a function of both $B_t$ and $t$.  Let $g(t, x)$ be twice-continuously differentiable in $x$ and continuously differentiable in $t$.  Let $g_x,\ g_{xx},\ g_t$ denote the first derivative in $x$, the second derivative in $x$, the first derivative in $t$, respectively.  Then Ito's Lemma states that 
+$$dg(t, B_t) = g_t(t,B_t)dt + g_x(t,B_t)dB_t + \frac12 g_{xx}(t,B_t)dt$$
+
+Ito's Lemma also applies to general Brownian motion.  Let us consider $X_t$ Brownian motion with drift parameter $a(t,X_t)$ and variance parameter $b(t,X_t)^2$.  Then the differential equation for $X_t$ is 
+$$dX_t = a(t,X_t)dt + b(t,X_t)dB_t$$
+Ito's Lemma states that 
+$$d(t,X_t) = \left( g_t(t,X_t) + g_x(t,X_t)a(t,X_t) + \frac12 g_{xx}(t,X_t)b(t,X_t)^2\right)dt + g_x(t,X_t)b(t,X_t)dB_t$$
+(Here the drift and variance parameters are functions of $t$ and $X_t$ itself.  This is a generalization of the earlier definition of general Brownian motion, in which the drift and variance parameters were simply $a(t,X_t) = \mu$ and $b(t,X_t)^2 = \sigma^2$.)
+\\
+
+We will now provide a proof of Ito's Lemma.
+\begin{lemma}
+Ito's Lemma
+\end{lemma}
+
+\begin{proof}
+The Taylor series expansion of $g(t,x)$ is
+\begin{align*}
+g(t+\Delta t, X_t + \Delta X_t) &= g(t,X_t) + g_t(t,X_t)\Delta t + g_x(t,X_t)\Delta X_t + \frac12 g_{xx}(\Delta X_t)^2 + g_{tx}(t,X_t)\Delta t \Delta X_t + \frac12 g_{tt}(t,X_t)(\Delta t)^2 + \cdots \\
+\Rightarrow \ \ \ \ \Delta g(t,X_t) &= g_t(t,X_t)\Delta t + g_x(t,X_t)\Delta X_t + \frac12 g_{xx}(\Delta X_t)^2 + g_{tx}(t,X_t)\Delta t \Delta X_t + \frac12 g_{tt}(t,X_t)(\Delta t)^2 + \cdots \ \ \ \ (*)
+\end{align*}
+We also note that 
+$$\Delta X_t \approx a(t,X_t) \Delta t + b(t,X_t) \Delta B_t = a(t,X_t) \Delta t + b(t,X_t) \sqrt{\Delta t} Z$$
+for $Z \sim N(0,1)$ the standard Normal.
+
+With this, we can write 
+$$(\Delta X_t)^2 =b(t,X_t)^2 \Delta t Z^2 + O\left(\Delta t^{3/2}\right)$$
+Since $E(Z^2) = 1$ and $\text{Var}(Z^2) = 2$, then $(\Delta X_t)^2 \to b(t,X_t)^2\Delta t$ as $\Delta t \to 0$ with mean square convergence.
+
+In general we ignore terms with $\Delta t$ of degree greater than 1, since as $\Delta t$ approaches zero, those terms will approach 0 even faster.
+
+The expression $(*)$ then simplifies, after pruning away terms with $\Delta t$ of degree greater than 1, to
+\begin{align*}
+\Delta g(t,X_t) &= g_t(t,X_t)\Delta t + g_x(t,X_t) a(t,X_t) \Delta t + g_x(t,X_t) b(t,X_t) \Delta B_t + \frac12 g_{xx}(t,X_t)b(t,X_t)^2 \Delta t
+\end{align*}
+Taking the limit as $\Delta t$ and $\Delta X_t$ approach zero, the equation becomes
+\begin{align*}
+dg(t,X_t) &= g_t(t,X_t)dt + g_x(t,X_t) a(t,X_t) dt + g_x(t,X_t) b(t,X_t) dB_t + \frac12 g_{xx}(t,X_t)b(t,X_t)^2 dt \\
+&= \left( g_t(t,X_t) + g_x(t,X_t)a(t,X_t) + \frac12 g_{xx}(t,X_t)b(t,X_t)^2\right)dt + g_x(t,X_t)b(t,X_t)dB_t
+\end{align*}
+as desired.
+
+\end{proof}
+
+We now consider a couple of important applications of Ito's Lemma.
+
+\subsection{Ornstein–Uhlenbeck Process}
+One stochastic process is the \emph{Ornstein-Uhlenbeck} process, which describes the velocity of a large Brownian particle with friction.  It is defined as a process $\{X_t\}_{t\geq 0}$ satisfying the following stochastic differential equation: 
+$$dX_t = -\lambda(X_t - \mu)dt + \sigma dB_t$$
+for $\lambda, \sigma > 0$, $\mu\in\R$.
+
+\begin{lemma}
+The solution for the Ornstein-Uhlenbeck process is $$X_t = X_0e^{-\lambda t} + \mu\left( 1 - e^{-\lambda t}\right) + \sigma \int_0^t e^{-\lambda(t-s)}dB_s$$
+\end{lemma}
+\begin{proof}
+We will consider the function $g(t,X_t) = X_t e^{\lambda t}$.  Then the derivatives are 
+$$g_t(t,X_t) = \lambda X_t e^{\lambda t},\ g_x(t,X_t) = e^{\lambda t},\ g_{xx}(t,X_t) = 0$$
+
+Then using Ito's Lemma:
+\begin{align*}
+dg(t,X_t) &= \left( \lambda X_t e^{\lambda t} + e^{\lambda t}\left(-\lambda(X_t-\mu)\right) + \frac12 \cdot 0 \right)dt + e^{\lambda t}\sigma dB_t \\
+&= \lambda \mu e^{\lambda t} dt + \sigma e^{\lambda t} dB_t 
+\end{align*}
+After integration, the equation becomes
+\begin{align*}
+g(t,X_t) - g(0,X_0) &= \mu \int_0^t \lambda e^{\lambda s}ds + \sigma \int_0^t e^{\lambda s}dB_s \\
+\Rightarrow \ \ \ \ \ X_t e^{\lambda t} - X_0 &= \mu\left( e^{\lambda t} - 1\right) + \sigma \int_0^t e^{\lambda s}dB_s \\
+\Rightarrow \ \ \ \ \ X_t &= X_0 e^{-\lambda t} + \mu\left( 1 - e^{-\lambda t}\right) + \sigma \int_0^t e^{-\lambda(t-s)}dB_s
+\end{align*}
+as desired.
+
+\end{proof}
+
+\subsection{Valuing Stocks}
+Ito's Lemma is also useful in the realm of finance.  One simple application is in modeling the price of a stock, $S_t$.  
+
+For the model of the stock price $S_t$, we make a few assumptions: 
+\begin{itemize}
+\item The drift parameter is proportional to the  stock price $S_t$.  That is, the greater the stock price right now, the more we would expect the price to grow (or shrink).  Let $\mu$ be the scaling factor of this proportional change, so $a(t,S_t) = \mu S_t$.
+\item The square root of the variance parameter is also proportional to the  stock price $S_t$.  The greater the  stock price, the greater we expect the stock price to fluctuate.  Let $\sigma>0$ be the scaling factor, so $b(t,S_t) = \sigma S_t$.
+\end{itemize}
+
+\begin{lemma}
+Under the model described above, $S_t$ is a geometric Brownian motion. 
+\end{lemma}
+\begin{proof}
+We will again use Ito's Lemma.  We consider the function $g(t,S_t) = \log S_t$.  The derivatives are
+$$g_t(t,S_t) = 0,\ g_x(t,S_t) = \frac{1}{S_t},\ g_{xx}(t,S_t) = -\frac{1}{S_t^2}$$
+Then, using Ito's Lemma: 
+\begin{align*}
+dg(t,S_t) &= \left( 0 + \frac{1}{S_t} \mu S_t + \frac12 \cdot \frac{-1}{S_t^2} \sigma^2 S_t^2\right) dt + \frac{1}{S_t}\sigma S_t dB_t \\
+&= \left( \mu - \frac12 \sigma^2\right)dt + \sigma dB_t
+\end{align*}
+Taking the integral: 
+\begin{align*}
+g(t,S_t) - g(0,S_0) &= \left( \mu - \frac12 \sigma^2\right) \int_0^t ds + 
+\sigma \int_0^t dB_s \\
+\log S_t - \log S_0 &= \left( \mu - \frac12 \sigma^2\right)t + \sigma (B_t - B_0) \\
+S_t &= S_0 \exp\left( \left( \mu - \frac12 \sigma^2\right)t + \sigma B_t\right)
+\end{align*}
+Thus, we have that $S_t$ is geometric BM.  
+
+\end{proof}
+
+\begin{corollary}
+The distribution of $S_t$, conditional on $S_0$, is log-normal.
+\end{corollary}
+\begin{proof}
+The expression of $S_t$, given the value of $S_0$ is $e$ raised to the power of a normal variable with mean $\log S_0 + (\mu - \sigma^2/2)t$ and variance $\sigma^2t$, which is the definition of a log-normal distribution. It follows that the expected value of $S_t$ given $S_0$ is namely $S_0e^{\mu t}$.
+
+\end{proof}
+
+
+
+
+\section*{References}
+\begin{itemize}
+\item Blitzstein, J. and Morris, C. (unpublished). \emph{Probability for Statistical Science}
+\item Blyth, S. (2014). \emph{An Introduction to Quantitative Finance}. Oxford, UK: Oxford University Press.
+\item Dobrow, R. (2016). \emph{Introduction to Stochastic Calculus with R}. Hoboken, New Jersey: John Wiley \& Sons, Inc.
+\item Sheppard, N. (2017). \emph{Stat171: Introduction to Stochastic Calculus - NS Lecture 10: Diffusions and Ito Calculus}.  Harvard University, Cambridge, MA.
+\end{itemize}
+
+\end{document}
